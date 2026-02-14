@@ -2,113 +2,141 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include <limits>
 
-//Private Name Space
 namespace {
+
 //========================================
-// HELPER METHODS
-// --Error Handling
+// PRIVATE Name Space: HELPER METHODS
 //========================================
-    std::string promptNonEmptyLine(const std::string& prompt) {
-        std::string input;
+	std::string promptNonEmptyLine(const std::string& prompt) {
+		std::string input;
 
-        while (true) {
-            std::cout << prompt;
-            if (!std::getline(std::cin, input)) {
-                throw std::runtime_error("Input stream failure while reading user input.");
-            }
+		while (true) {
+			std::cout << prompt;
 
-            if (!input.empty()) {
-                return input;
-            }
+			if (!std::getline(std::cin, input)) {
+				throw std::runtime_error("Input stream failure while reading user input.");
+			}
 
-            std::cout << "Input cannot be empty. Please try again.\n";
-        }
-    }
+			if (!input.empty()) {
+				return input;
+			}
 
-    std::string promptValidDueDate(const std::string& prompt) {
-        while (true) {
-            std::string input = promptNonEmptyLine(prompt);
+			std::cout << "Input cannot be empty. Please try again.\n";
+		}
+	}
 
-            if (input.size() != 10 || input[2] != '/' || input[5] != '/') {
-                std::cout << "Invalid format. Use MM/DD/YYYY.\n";
-                continue;
-            }
+	std::string promptValidDueDate(const std::string& prompt) {
+		while (true) {
+			std::string input = promptNonEmptyLine(prompt);
 
-            std::string monthStr = input.substr(0, 2);
-            std::string dayStr   = input.substr(3, 2);
-            std::string yearStr  = input.substr(6, 4);
+			if (input.size() != 10 || input[2] != '/' || input[5] != '/') {
+				std::cout << "Invalid format. Use MM/DD/YYYY.\n";
+				continue;
+			}
 
-            try {
-                int month = std::stoi(monthStr);
-                int day   = std::stoi(dayStr);
-                int year  = std::stoi(yearStr);
+			const std::string monthStr = input.substr(0, 2);
+			const std::string dayStr   = input.substr(3, 2);
+			const std::string yearStr  = input.substr(6, 4);
 
-                if (month < 1 || month > 12) {
-                    std::cout << "Invalid month.\n";
-                    continue;
-                }
+			try {
+				const int month = std::stoi(monthStr);
+				const int day   = std::stoi(dayStr);
+				const int year  = std::stoi(yearStr);
 
-                if (day < 1 || day > 31) {
-                    std::cout << "Invalid day.\n";
-                    continue;
-                }
+				if (month < 1 || month > 12) {
+					std::cout << "Invalid month.\n";
+					continue;
+				}
+				if (day < 1 || day > 31) {
+					std::cout << "Invalid day.\n";
+					continue;
+				}
+				if (year < 1000 || year > 9999) {
+					std::cout << "Invalid year.\n";
+					continue;
+				}
 
-                if (year < 1000 || year > 9999) {
-                    std::cout << "Invalid year.\n";
-                    continue;
-                }
+				return input;
 
-                return input;  // valid
+			} catch (const std::invalid_argument&) {
+				std::cout << "Date must contain numbers only.\n";
+			} catch (const std::out_of_range&) {
+				std::cout << "Date values are out of range.\n";
+			}
+		}
+	}
 
-            } catch (const std::invalid_argument&) {
-                std::cout << "Date must contain numbers only.\n";
-            } catch (const std::out_of_range&) {
-                std::cout << "Date values are out of range.\n";
-            }
-        }
-    }
+	std::string formatDateToLongForm(const std::string& shortDate) {
+		const std::string months[12] = {
+			"January","February","March","April","May","June",
+			"July","August","September","October","November","December"
+		};
 
-    std::string formatDateToLongForm(const std::string& shortDate) {
+		const int month = std::stoi(shortDate.substr(0, 2));
+		const std::string day  = shortDate.substr(3, 2);
+		const std::string year = shortDate.substr(6, 4);
 
-        const std::string months[12] = {
-            "January","February","March","April","May","June",
-            "July","August","September","October","November","December"
-        };
-
-        int month = std::stoi(shortDate.substr(0, 2));
-        std::string day  = shortDate.substr(3, 2);
-        std::string year = shortDate.substr(6, 4);
-
-        return months[month - 1] + " " + day + ", " + year;
-    }
+		return months[month - 1] + " " + day + ", " + year;
+	}
 }
+//======END Private namespace======
 
-//Public Name Space
+
+//========================================
+// PUBLIC Name Space:
+//========================================
 namespace ct5 {
-//========================================
-// Collect User Info
-//========================================
-    std::string collectUserInfoBlock() {
 
-        std::string projectName = promptNonEmptyLine("Project Name: ");
-        std::string fullName    = promptNonEmptyLine("Full Name: ");
-        std::string schoolName    = promptNonEmptyLine("School Name: ");
-        std::string courseName    = promptNonEmptyLine("Course Name: ");
-        std::string profName    = promptNonEmptyLine("Professors Name: ");
-        std::string shortDate = promptValidDueDate("Project Due Date (MM/DD/YYYY): ");
-        std::string dueDate   = formatDateToLongForm(shortDate);
+	std::string GetUserInfoBlock() {
+		const std::string projectName = promptNonEmptyLine("Project Name: ");
+		const std::string fullName    = promptNonEmptyLine("Full Name: ");
+		const std::string schoolName  = promptNonEmptyLine("School Name: ");
+		const std::string courseName  = promptNonEmptyLine("Course Name: ");
+		const std::string profName    = promptNonEmptyLine("Professor Name: ");
+		const std::string shortDate   = promptValidDueDate("Project Due Date (MM/DD/YYYY): ");
+		const std::string dueDate     = formatDateToLongForm(shortDate);
 
-        std::string block;
+		std::string block;
+		block += "Project Name: " + projectName + "\n";
+		block += "Student Name: " + fullName + "\n";
+		block += "School Name: " + schoolName + "\n";
+		block += "Course Name: " + courseName + "\n";
+		block += "Professor Name: Professor " + profName + "\n";
+		block += "Project Due Date: " + dueDate + "\n";
 
-        block += "Project Name: " + projectName + "\n";
-        block += "Student Name: " + fullName + "\n";
-        block += "School Name: " + schoolName + "\n";
-        block += "Course Name: " + courseName + "\n";
-        block += "Professor Name: Professor " + profName + "\n";
-        block += "Project Due Date: " + dueDate + "\n";
+		return block;
+	}
 
-        return block;
-    }
+	bool promptYesNo(const std::string& prompt) {
+		while (true) {
+			std::string input = promptNonEmptyLine(prompt + " (Y/N): ");
+
+			if (input == "Y" || input == "y") return true;
+			if (input == "N" || input == "n") return false;
+
+			std::cout << "Please enter Y or N.\n";
+		}
+	}
+
+	int promptMenuChoice(int minOption, int maxOption) {
+		while (true) {
+			std::string input = promptNonEmptyLine("Enter your choice: ");
+
+			try {
+				int choice = std::stoi(input);
+				if (choice >= minOption && choice <= maxOption) {
+					return choice;
+				}
+			} catch (...) {
+				// ignore and re-prompt
+			}
+
+			std::cout << "Invalid choice. Please enter a number from "
+					  << minOption << " to " << maxOption << ".\n";
+		}
+	}
 }
+//======END PUBLIC namespace======
 

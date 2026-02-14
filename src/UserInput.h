@@ -5,7 +5,13 @@
 
 namespace ct5 {
 
-    std::string collectUserInfoBlock();
+    // Get all metadata and returns it as a formatted block of text.
+    std::string GetUserInfoBlock();
+
+    // Menu input helpers
+    int promptMenuChoice(int minOption, int maxOption);
+    bool promptYesNo(const std::string& prompt);
+
 }
 
 #endif
