@@ -2,49 +2,42 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
-#include <limits>
 
+//========================================
+// PRIVATE namespace: Helper Methods
+//========================================
 namespace {
 
-//========================================
-// PRIVATE Name Space: HELPER METHODS
-//========================================
+	//==VALIDATE-INPUT-PRMT==: No empty inputs
 	std::string promptNonEmptyLine(const std::string& prompt) {
 		std::string input;
-
 		while (true) {
 			std::cout << prompt;
-
 			if (!std::getline(std::cin, input)) {
 				throw std::runtime_error("Input stream failure while reading user input.");
 			}
-
 			if (!input.empty()) {
 				return input;
 			}
-
 			std::cout << "Input cannot be empty. Please try again.\n";
 		}
 	}
 
+	//==VALIDATE-INPUT-PRMT==: Due date validation
 	std::string promptValidDueDate(const std::string& prompt) {
 		while (true) {
 			std::string input = promptNonEmptyLine(prompt);
-
 			if (input.size() != 10 || input[2] != '/' || input[5] != '/') {
 				std::cout << "Invalid format. Use MM/DD/YYYY.\n";
 				continue;
 			}
-
 			const std::string monthStr = input.substr(0, 2);
 			const std::string dayStr   = input.substr(3, 2);
 			const std::string yearStr  = input.substr(6, 4);
-
 			try {
 				const int month = std::stoi(monthStr);
 				const int day   = std::stoi(dayStr);
 				const int year  = std::stoi(yearStr);
-
 				if (month < 1 || month > 12) {
 					std::cout << "Invalid month.\n";
 					continue;
@@ -57,9 +50,7 @@ namespace {
 					std::cout << "Invalid year.\n";
 					continue;
 				}
-
 				return input;
-
 			} catch (const std::invalid_argument&) {
 				std::cout << "Date must contain numbers only.\n";
 			} catch (const std::out_of_range&) {
@@ -68,6 +59,7 @@ namespace {
 		}
 	}
 
+	//==FORMAT==: Format date for printout
 	std::string formatDateToLongForm(const std::string& shortDate) {
 		const std::string months[12] = {
 			"January","February","March","April","May","June",
@@ -80,16 +72,32 @@ namespace {
 
 		return months[month - 1] + " " + day + ", " + year;
 	}
-}
-//======END Private namespace======
-
+}//END PRIVATE namespace==================
 
 //========================================
-// PUBLIC Name Space:
+// PUBLIC namespace
 //========================================
 namespace ct5 {
 
-	std::string GetUserInfoBlock() {
+	//==PRMT==: Main Menu PROMPT
+	int promptMenuChoice(int minOption, int maxOption) {
+		while (true) {
+			std::string input = promptNonEmptyLine("Enter your choice: ");
+			try {
+				int choice = std::stoi(input);
+				if (choice >= minOption && choice <= maxOption) {
+					return choice;
+				}
+			} catch (const std::invalid_argument&) {
+			} catch (const std::out_of_range&) {
+			}
+			std::cout << "Invalid choice. Please enter a number from "
+					  << minOption << " to " << maxOption << ".\n";
+		}
+	}
+
+	//==INPUT==: Collect user input
+	std::string getUserInfoBlock() {
 		const std::string projectName = promptNonEmptyLine("Project Name: ");
 		const std::string fullName    = promptNonEmptyLine("Full Name: ");
 		const std::string schoolName  = promptNonEmptyLine("School Name: ");
@@ -97,7 +105,7 @@ namespace ct5 {
 		const std::string profName    = promptNonEmptyLine("Professor Name: ");
 		const std::string shortDate   = promptValidDueDate("Project Due Date (MM/DD/YYYY): ");
 		const std::string dueDate     = formatDateToLongForm(shortDate);
-
+		//==FORMAT==: formats input
 		std::string block;
 		block += "Project Name: " + projectName + "\n";
 		block += "Student Name: " + fullName + "\n";
@@ -105,10 +113,10 @@ namespace ct5 {
 		block += "Course Name: " + courseName + "\n";
 		block += "Professor Name: Professor " + profName + "\n";
 		block += "Project Due Date: " + dueDate + "\n";
-
 		return block;
 	}
 
+	//==PRMT-BOOL==: yes or no prompt
 	bool promptYesNo(const std::string& prompt) {
 		while (true) {
 			std::string input = promptNonEmptyLine(prompt + " (Y/N): ");
@@ -119,24 +127,4 @@ namespace ct5 {
 			std::cout << "Please enter Y or N.\n";
 		}
 	}
-
-	int promptMenuChoice(int minOption, int maxOption) {
-		while (true) {
-			std::string input = promptNonEmptyLine("Enter your choice: ");
-
-			try {
-				int choice = std::stoi(input);
-				if (choice >= minOption && choice <= maxOption) {
-					return choice;
-				}
-			} catch (...) {
-				// ignore and re-prompt
-			}
-
-			std::cout << "Invalid choice. Please enter a number from "
-					  << minOption << " to " << maxOption << ".\n";
-		}
-	}
-}
-//======END PUBLIC namespace======
-
+}//END PUBLIC namespace==================

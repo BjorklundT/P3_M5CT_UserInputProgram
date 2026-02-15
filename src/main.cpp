@@ -1,12 +1,7 @@
-//============================================================================
-// Name        : P3_M5CT_UserInputProgram.cpp
-// Author      : Timothy Bjorklund
-//============================================================================
 #include <exception>
 #include <iostream>
 #include <string>
 #include <thread>
-
 #include "UserInput.h"
 #include "FileOps.h"
 #include "ConsoleUI.h"
@@ -19,13 +14,11 @@ namespace {
     const std::string kOutputFile = "CSC450-mod5-reverse.txt";
 }//END PRIVATE namespace==================
 
-
 //========================================
 // Main method
 //========================================
 int main() {
     try {
-
         // Text File Header captured at startup (first 4 lines to be safe)
     	// I did not want to lose the header content within all my manipulation
         const std::string baselineHeader = ct5::readFirstNLines(kInputFile, 4);
@@ -33,7 +26,6 @@ int main() {
         while (true) {
             ct5::printMenu();
             const int choice = ct5::promptMenuChoice(1, 7);
-
             //===========================
             //Option 7: Exit
             //===========================
@@ -43,7 +35,6 @@ int main() {
             }
 
             switch (choice) {
-
             	//===========================
             	//Option 1: Full Program Run
             	//===========================
@@ -54,19 +45,16 @@ int main() {
                         ct5::printStatus("Program reset complete (mod5 reset, reverse deleted if present).");
                     }
 
-                    const std::string infoBlock = ct5::GetUserInfoBlock();
-                    ct5::rewriteFileWithHeaderAndData(kInputFile, infoBlock);
+                    const std::string infoBlock = ct5::getUserInfoBlock();
+                    ct5::rewriteFileWithHeaderAndData(kInputFile, baselineHeader, infoBlock);
                     ct5::printStatus("Updated mod5 file (kept header, replaced rest).");
 
                     if (ct5::promptYesNo("Create/update reverse file now?")) {
                         bool existed = false;
-
                         std::thread worker([&]() {
                             existed = ct5::reverseFileToFile(kInputFile, kOutputFile);
                         });
-
                         worker.join();
-
                         if (existed) {
                             ct5::printStatus("Reverse file existed, it was cleared and rewritten.");
                         } else {
@@ -79,7 +67,6 @@ int main() {
                     ct5::pressEnterToContinue();
                     break;
                 }
-
                 //===========================
                 //Option 2: Reset Program back to Original State
                 //===========================
@@ -95,7 +82,6 @@ int main() {
                     ct5::pressEnterToContinue();
                     break;
                 }
-
                 //===========================
                 //Option 3: Read mod5 Text File
                 //===========================
@@ -104,7 +90,6 @@ int main() {
                     ct5::pressEnterToContinue();
                     break;
                 }
-
                 //===========================
                 //Option 4: Read Reverse File
                 //===========================
@@ -117,7 +102,6 @@ int main() {
                     ct5::pressEnterToContinue();
                     break;
                 }
-
                 //===========================
                 //Option 5: Delete Reverse File
                 //===========================
@@ -131,7 +115,6 @@ int main() {
                     ct5::pressEnterToContinue();
                     break;
                 }
-
                 //===========================
                 //Option 6: Reset mod5 file
                 //===========================
@@ -143,7 +126,6 @@ int main() {
                     ct5::pressEnterToContinue();
                     break;
                 }
-
                 //===========================
                 //Default: 	Print Invalid option
                 //			Press Enter to Continue logic

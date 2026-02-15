@@ -2,10 +2,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
-#include <vector>
 #include <algorithm>
 #include <iterator>
-#include <cstdio>
 #include <filesystem>
 
 //========================================
@@ -13,14 +11,14 @@
 //========================================
 namespace {
 
-	// File Error Types
+	//==FILE-ERROR==: File Error Types
 	enum class FileErrorType {
 		ReadOpen,
 		WriteOpen,
 		WriteFailure
 	};
 
-	// Fail Connection Errors Method
+	//==FILE-ERROR==: File Connection Errors Method
 	void fileConnectionError(FileErrorType type, const std::string& path) {
 		switch (type) {
 			case FileErrorType::ReadOpen:
@@ -82,16 +80,16 @@ namespace ct5 {
 	}
 
 	//==REWRITE==: write header text back into mod5 text file
-	void rewriteFileWithHeaderAndData(const std::string& path, const std::string& data) {
-		// Read first 4 lines
-		const std::string headerText = readFirstNLines(path, 4); //TODO: might be duplicate logic from main.cpp
+	void rewriteFileWithHeaderAndData(	const std::string& path,
+										const std::string& baselineHeader,
+										const std::string& data) {
 
 		// Rewrite file (erase old content)
 		std::ofstream out(path, std::ios::trunc);
 		if (!out) {
 			fileConnectionError(FileErrorType::WriteOpen, path);
 		}
-		out << headerText;
+		out << baselineHeader;
 		out << data;
 		if (!out) {
 			fileConnectionError(FileErrorType::WriteFailure, path);
@@ -130,7 +128,8 @@ namespace ct5 {
 	}
 
 	//==REVERSE==: reverse file method
-	bool reverseFileToFile(const std::string& inputPath, const std::string& outputPath) {
+	bool reverseFileToFile(	const std::string& inputPath,
+							const std::string& outputPath) {
 		std::string content = readFile(inputPath);
 		std::reverse(content.begin(), content.end());
 		return writeToFile(outputPath, content);

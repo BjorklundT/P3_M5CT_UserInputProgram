@@ -2,3 +2,9 @@ Please be sure to append your data to this text file.
 
 If these first three lines are deleted, then your program is not functioning as expected.
 
+Project Name: User Input Program
+Student Name: Timothy G. Bjorklund
+School Name: Colorado State University Global
+Course Name: CSC 450: Programing III
+Professor Name: Professor Farhad Bari
+Project Due Date: February 15, 2026
